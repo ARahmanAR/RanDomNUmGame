@@ -86,8 +86,8 @@ const validateGuess = (guess) => {
     alert('Please enter a  number less than 100.');
   } else {
     prevGuess.push(guess);
-    if (numGuess === 11) {
-      displayGuess(guess);
+    if (numGuess === 10) {
+      displayGuess(guess, true);
       displayMessege(`Game Over. Random number was ${randomNumber}`);
       endGame();
     } else {
@@ -108,11 +108,12 @@ const checkGuess = (guess) => {
   }
 };
 
-displayGuess = (guess) => {
+displayGuess = (guess, isFinal = false) => {
   userInput.value = '';
   guessSlot.innerHTML += `${guess}, `;
   numGuess++;
-  remainig.innerHTML = `${11 - numGuess}`;
+  const guessesLeft = Math.max(0, 10 - numGuess);
+  remainig.innerHTML = isFinal ? '0' : `${guessesLeft}`;
 };
 
 const displayMessege = (messege) => {

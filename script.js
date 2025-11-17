@@ -25,11 +25,7 @@ const updateToggleVisual = (theme) => {
 
 const setTheme = (theme) => {
   const normalized = theme === 'dark' ? 'dark' : 'light';
-  if (normalized === 'dark') {
-    rootEl.setAttribute('data-theme', 'dark');
-  } else {
-    rootEl.removeAttribute('data-theme');
-  }
+  rootEl.setAttribute('data-theme', normalized);
   activeTheme = normalized;
   updateToggleVisual(normalized);
   try { localStorage.setItem('theme', normalized); } catch (e) {}

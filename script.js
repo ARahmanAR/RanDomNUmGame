@@ -8,6 +8,7 @@ let remainig = document.querySelector('.lastResult');
 let lowOrHi = document.querySelector('.lowOrHi');
 let startOver = document.querySelector('.resultParas');
 
+const MAX_GUESSES = 10;
 const p = document.createElement('p');
 
 // Theme (light / dark) handling — keeps UI centered and in liquid-glass style
@@ -57,7 +58,7 @@ if (themeToggle) {
 }
 
 let prevGuess = [];
-let numGuess = 1;
+let numGuess = 0;
 
 let playGame = true;
 
@@ -86,34 +87,38 @@ const validateGuess = (guess) => {
     alert('Please enter a  number less than 100.');
   } else {
     prevGuess.push(guess);
-    if (numGuess === 10) {
-      displayGuess(guess, true);
+    displayGuess();
+
+    if (guess === randomNumber) {
+      displayMessege('You guessed it right');
+      endGame();
+      return;
+    }
+
+    if (prevGuess.length >= MAX_GUESSES) {
       displayMessege(`Game Over. Random number was ${randomNumber}`);
       endGame();
-    } else {
-      displayGuess(guess);
-      checkGuess(guess);
+      return;
     }
+
+    checkGuess(guess);
   }
 };
 
 const checkGuess = (guess) => {
-  if (guess === randomNumber) {
-    displayMessege(`You guessed it right`);
-    endGame();
-  } else if (guess < randomNumber) {
+  if (guess < randomNumber) {
     displayMessege(`Number is tooo low!!!`);
   } else if (guess > randomNumber) {
     displayMessege(`Number is tooo high!!!`);
   }
 };
 
-displayGuess = (guess, isFinal = false) => {
+displayGuess = () => {
   userInput.value = '';
-  guessSlot.innerHTML += `${guess}, `;
-  numGuess++;
-  const guessesLeft = Math.max(0, 10 - numGuess);
-  remainig.innerHTML = isFinal ? '0' : `${guessesLeft}`;
+  guessSlot.textContent = prevGuess.join(', ');
+  numGuess = prevGuess.length;
+  const guessesLeft = Math.max(0, MAX_GUESSES - numGuess);
+  remainig.textContent = `${guessesLeft}`;
 };
 
 const displayMessege = (messege) => {
@@ -136,9 +141,11 @@ const newGame = () => {
   const startHandler = (event) => {
     randomNumber = parseInt(Math.random() * 100 + 1, 10);
     prevGuess = [];
-    numGuess = 1;
-    guessSlot.innerHTML = '';
+    numGuess = 0;
+    guessSlot.textContent = '';
     remainig = document.querySelector('.lastResult');
+    remainig.textContent = `${MAX_GUESSES}`;
+    lowOrHi.textContent = '';
     userInput.removeAttribute('disabled');
     startOver.removeChild(p);
     playGame = true;

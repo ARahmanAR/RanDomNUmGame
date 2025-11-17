@@ -13,15 +13,27 @@ const p = document.createElement('p');
 // Theme (light / dark) handling — keeps UI centered and in liquid-glass style
 const themeToggle = document.querySelector('#themeToggle');
 const rootEl = document.documentElement;
+let activeTheme = 'light';
+
+const updateToggleVisual = (theme) => {
+  if (!themeToggle) return;
+  const nextTheme = theme === 'dark' ? 'light' : 'dark';
+  themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+  themeToggle.setAttribute('aria-label', `Switch to ${nextTheme} theme`);
+  themeToggle.setAttribute('title', `Switch to ${nextTheme} theme`);
+};
+
 const setTheme = (theme) => {
-  if (theme === 'dark') {
+  const normalized = theme === 'dark' ? 'dark' : 'light';
+  if (normalized === 'dark') {
     rootEl.setAttribute('data-theme', 'dark');
-    if (themeToggle) themeToggle.textContent = '🌙';
   } else {
     rootEl.removeAttribute('data-theme');
-    if (themeToggle) themeToggle.textContent = '☀️';
   }
-  try { localStorage.setItem('theme', theme); } catch (e) {}
+  activeTheme = normalized;
+  updateToggleVisual(normalized);
+  try { localStorage.setItem('theme', normalized); } catch (e) {}
+  return normalized;
 };
 
 // initialize theme from saved pref or system
@@ -40,10 +52,12 @@ const setTheme = (theme) => {
 if (themeToggle) {
   themeToggle.addEventListener('click', (e) => {
     e.preventDefault();
-    const isDark = rootEl.getAttribute('data-theme') === 'dark';
-    setTheme(isDark ? 'light' : 'dark');
+    setTheme(activeTheme === 'dark' ? 'light' : 'dark');
   });
-  themeToggle.addEventListener('touchstart', (e) => { e.preventDefault(); const isDark = rootEl.getAttribute('data-theme') === 'dark'; setTheme(isDark ? 'light' : 'dark'); }, {passive:false});
+  themeToggle.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    setTheme(activeTheme === 'dark' ? 'light' : 'dark');
+  }, {passive:false});
 }
 
 let prevGuess = [];
